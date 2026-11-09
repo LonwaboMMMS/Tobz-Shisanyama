@@ -78,18 +78,34 @@ export async function onRequestPost({ request, env }) {
   if (event.type !== "payment.succeeded") return new Response("Event ignored.", { status: 200 });
 
   const payment = event.payload || {};
-  // Yoco echoes the metadata supplied when the checkout was created.
-  // place-order.js supplies metadata.orderId, so use that to find our order.
+  // Yoco's Checkout API payment notification documents metadata.checkoutId.
+  // We also accept metadata.orderId when it is echoed from our checkout request.
+  // The checkout ID is saved against the order by place-order.js.
   const orderId = payment.metadata?.orderId;
-  if (!orderId || payment.status !== "succeeded" || payment.currency !== "ZAR") {
+  const checkoutId = payment.metadata?.checkoutId;
+  if ((!orderId && !checkoutId) || payment.status !== "succeeded" || payment.currency !== "ZAR") {
     return new Response("Payment details incomplete.", { status: 400 });
   }
 
-  const order = await env.DB.prepare(
-    "SELECT * FROM orders WHERE order_id = ?"
-  ).bind(orderId).first();
+  let order = null;
+  if (orderId) {
+    order = await env.DB.prepare(
+      "SELECT * FROM orders WHERE order_id = ?"
+    ).bind(orderId).first();
+  }
+  if (!order && checkoutId) {
+    order = await env.DB.prepare(
+      "SELECT * FROM orders WHERE checkout_id = ?"
+    ).bind(checkoutId).first();
+  }
 
-  if (!order) return new Response("Order not found.", { status: 200 });
+  if (!order) {
+    console.error("No order matched Yoco payment metadata:", {
+      hasOrderId: Boolean(orderId),
+      hasCheckoutId: Boolean(checkoutId)
+    });
+    return new Response("Order not found.", { status: 200 });
+  }
   if (Number(payment.amount) !== Number(order.total_cents)) {
     console.error("Yoco amount mismatch for order:", order.order_id);
     return new Response("Payment amount mismatch.", { status: 400 });
