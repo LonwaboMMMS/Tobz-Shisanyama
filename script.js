@@ -1,140 +1,59 @@
-// Tobz Shisanyama storefront
-// Product prices and names will be configured when the menu is supplied.
-const products = [];
-let cart = [];
-
-const productGrid = document.getElementById('product-grid');
-const cartOverlay = document.getElementById('cart-overlay');
-const cartItems = document.getElementById('cart-items');
-const cartCount = document.getElementById('cart-count');
-const cartTotal = document.getElementById('cart-total');
-const cartNote = document.getElementById('cart-note');
-const checkoutButton = document.getElementById('checkout-button');
-
-document.getElementById('year').textContent = new Date().getFullYear();
-
-function formatRand(amount) {
-  return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+// Tobz Shisanyama: price-first ordering. Customers enter rand; weight is calculated from the price per kg.
+const products=[
+ {id:'pork',name:'Pork',category:'Pork',pricePerKg:105},
+ {id:'beef',name:'Beef',category:'Beef',pricePerKg:115},
+ {id:'wors',name:'Wors',category:'Wors',pricePerKg:95}
+];
+const CART_KEY='tobz-shisanyama-cart-v1';
+let cart=loadCart();
+const money=value=>new Intl.NumberFormat('en-ZA',{style:'currency',currency:'ZAR'}).format(value);
+const byId=id=>document.getElementById(id);
+function loadCart(){try{return JSON.parse(localStorage.getItem(CART_KEY))||[]}catch{return []}}
+function saveCart(){localStorage.setItem(CART_KEY,JSON.stringify(cart))}
+function weightFor(amount,rate){return amount/rate}
+function updateWeight(productId){
+ const input=document.querySelector('[data-amount="'+productId+'"]');
+ const output=document.querySelector('[data-weight-result="'+productId+'"]');
+ if(!input||!output)return;
+ const amount=Number(input.value),product=products.find(p=>p.id===productId);
+ output.textContent=Number.isFinite(amount)&&amount>0?(weightFor(amount,product.pricePerKg).toFixed(2)+' kg'):'— kg';
 }
-
-function renderProducts(category = 'all') {
-  const visible = products.filter(product => category === 'all' || product.category === category);
-  if (!visible.length) {
-    productGrid.innerHTML = '<div class="menu-empty"><p>Our menu is being prepared.</p><span>Check back soon for the full selection.</span></div>';
-    return;
-  }
-  productGrid.innerHTML = visible.map(product => `
-    <article class="product-card">
-      <img class="product-photo" src="${product.image}" alt="${product.name}" loading="lazy">
-      <div class="product-info">
-        <span class="product-category">${product.category.toUpperCase()}</span>
-        <h3>${product.name}</h3>
-        <p class="product-price">${formatRand(product.pricePerKg)} <span>/ kg</span></p>
-        <div class="product-buy">
-          <label class="weight-label">WEIGHT (KG)
-            <input type="number" min="0.1" step="0.1" value="1" id="weight-${product.id}" aria-label="Weight in kilograms">
-          </label>
-          <button class="add-button" data-add="${product.id}">ADD +</button>
-        </div>
-      </div>
-    </article>`).join('');
+function addProduct(id){
+ const input=document.querySelector('[data-amount="'+id+'"]');
+ const amount=Number(input?.value),product=products.find(p=>p.id===id);
+ if(!product||!Number.isFinite(amount)||amount<=0){input?.focus();return}
+ const existing=cart.find(item=>item.id===id);
+ if(existing){existing.amount=Math.round((existing.amount+amount)*100)/100}
+ else cart.push({id,amount});
+ saveCart();renderCart();
+ const button=document.querySelector('[data-add="'+id+'"]');
+ if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
 }
-
-function addToCart(productId, weight) {
-  const product = products.find(item => item.id === productId);
-  if (!product || !Number.isFinite(weight) || weight <= 0) return;
-  const existing = cart.find(item => item.id === productId);
-  if (existing) existing.weight = Math.round((existing.weight + weight) * 100) / 100;
-  else cart.push({ id: productId, weight });
-  renderCart();
+function renderCart(){
+ const count=cart.reduce((sum,item)=>sum+item.amount,0);
+ const total=count;
+ const countEl=byId('cart-count'),mobileCount=byId('mobile-cart-count'),totalEl=byId('cart-total'),itemsEl=byId('cart-items'),checkout=byId('checkout-button');
+ if(countEl)countEl.textContent=money(count).replace('ZAR','').replace('R','').trim();
+ if(mobileCount)mobileCount.textContent=cart.length;
+ if(totalEl)totalEl.textContent=money(total);
+ if(checkout)checkout.disabled=!cart.length;
+ if(!itemsEl)return;
+ if(!cart.length){itemsEl.innerHTML='<div class="empty-cart"><span>🛍️</span><h3>Your bag is empty</h3><p>Head to the menu and add something for the fire.</p></div>';return}
+ itemsEl.innerHTML=cart.map(item=>{
+  const p=products.find(product=>product.id===item.id);if(!p)return '';
+  const kg=weightFor(item.amount,p.pricePerKg);
+  return '<div class="cart-line"><div><h4>'+p.name+'</h4><p>'+money(p.pricePerKg)+' per kg · '+kg.toFixed(2)+' kg</p><p class="cart-line-price">'+money(item.amount)+'</p><button class="remove-item" data-remove="'+p.id+'">Remove</button></div><label><span class="sr-only">Amount in rand</span><span class="amount-input-wrap"><b>R</b><input type="number" min="1" step="1" value="'+item.amount+'" data-cart-amount="'+p.id+'"></span></label></div>';
+ }).join('');
 }
-
-function renderCart() {
-  const count = cart.reduce((sum, item) => sum + item.weight, 0);
-  const total = cart.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.id);
-    return sum + (product ? product.pricePerKg * item.weight : 0);
-  }, 0);
-  cartCount.textContent = count.toFixed(2).replace(/\.00$/, '');
-  cartTotal.textContent = formatRand(total);
-  cartNote.textContent = cart.length ? 'Delivery fees, if applicable, will be confirmed at checkout.' : 'Your cart is waiting for something delicious.';
-  checkoutButton.disabled = cart.length === 0;
-
-  if (!cart.length) {
-    cartItems.innerHTML = '<div class="empty-cart"><span>🛒</span><h3>Your cart is empty</h3><p>Some good meat would look great here.</p></div>';
-    return;
-  }
-
-  cartItems.innerHTML = cart.map(item => {
-    const product = products.find(p => p.id === item.id);
-    if (!product) return '';
-    return `<div class="cart-line">
-      <div><h4>${product.name}</h4><p>${formatRand(product.pricePerKg)} per kg · ${formatRand(product.pricePerKg * item.weight)}</p><button class="remove-item" data-remove="${product.id}">Remove</button></div>
-      <label><span class="sr-only">Weight in kilograms</span><input type="number" min="0.1" step="0.1" value="${item.weight}" data-weight="${product.id}"></label>
-    </div>`;
-  }).join('');
-}
-
-function openCart() {
-  cartOverlay.classList.add('open');
-  cartOverlay.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-}
-function closeCart() {
-  cartOverlay.classList.remove('open');
-  cartOverlay.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('open-cart').addEventListener('click', openCart);
-document.getElementById('close-cart').addEventListener('click', closeCart);
-cartOverlay.addEventListener('click', event => { if (event.target === cartOverlay) closeCart(); });
-document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCart(); });
-
-document.querySelector('.category-tabs').addEventListener('click', event => {
-  const tab = event.target.closest('[data-category]');
-  if (!tab) return;
-  document.querySelectorAll('.category-tab').forEach(button => button.classList.toggle('active', button === tab));
-  renderProducts(tab.dataset.category);
-});
-
-productGrid.addEventListener('click', event => {
-  const button = event.target.closest('[data-add]');
-  if (!button) return;
-  const weightInput = document.getElementById(`weight-${button.dataset.add}`);
-  const weight = Number(weightInput.value);
-  if (!Number.isFinite(weight) || weight <= 0) {
-    weightInput.focus();
-    return;
-  }
-  addToCart(button.dataset.add, weight);
-  button.textContent = 'ADDED ✓';
-  setTimeout(() => { button.textContent = 'ADD +'; }, 900);
-});
-
-cartItems.addEventListener('click', event => {
-  const button = event.target.closest('[data-remove]');
-  if (!button) return;
-  cart = cart.filter(item => item.id !== button.dataset.remove);
-  renderCart();
-});
-cartItems.addEventListener('change', event => {
-  const input = event.target.closest('[data-weight]');
-  if (!input) return;
-  const weight = Number(input.value);
-  if (!Number.isFinite(weight) || weight <= 0) {
-    renderCart();
-    return;
-  }
-  const item = cart.find(entry => entry.id === input.dataset.weight);
-  if (item) item.weight = Math.round(weight * 100) / 100;
-  renderCart();
-});
-
-// Checkout will be connected after delivery, payment and order-handling details are confirmed.
-checkoutButton.addEventListener('click', () => {
-  alert('Checkout will be available once the ordering and payment details are configured.');
-});
-
-renderProducts();
+function openCart(){const overlay=byId('cart-overlay');if(!overlay)return;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+function closeCart(){const overlay=byId('cart-overlay');if(!overlay)return;overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow=''}
+document.querySelectorAll('.year').forEach(el=>el.textContent=new Date().getFullYear());
+document.querySelectorAll('[data-amount]').forEach(input=>{updateWeight(input.dataset.amount);input.addEventListener('input',()=>updateWeight(input.dataset.amount))});
+document.querySelectorAll('[data-add]').forEach(button=>button.addEventListener('click',()=>addProduct(button.dataset.add)));
+byId('open-cart')?.addEventListener('click',openCart);byId('mobile-cart')?.addEventListener('click',openCart);byId('close-cart')?.addEventListener('click',closeCart);
+byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('cart-overlay'))closeCart()});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCart()});
+byId('cart-items')?.addEventListener('click',event=>{const button=event.target.closest('[data-remove]');if(!button)return;cart=cart.filter(item=>item.id!==button.dataset.remove);saveCart();renderCart()});
+byId('cart-items')?.addEventListener('change',event=>{const input=event.target.closest('[data-cart-amount]');if(!input)return;const amount=Number(input.value);if(!Number.isFinite(amount)||amount<=0){renderCart();return}const item=cart.find(entry=>entry.id===input.dataset.cartAmount);if(item)item.amount=Math.round(amount*100)/100;saveCart();renderCart()});
+byId('checkout-button')?.addEventListener('click',()=>alert('Your bag is ready. We will add delivery details and secure checkout in the next stage.'));
 renderCart();
