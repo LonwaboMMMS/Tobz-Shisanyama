@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#171714">
+<title>Checkout | Tobz Shisanyama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><nav class="desktop-nav"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav><a class="cart-trigger" href="menu.html">Back to menu</a></header>
+<main class="checkout-page">
+<div class="checkout-heading"><p class="eyebrow">ALMOST THERE</p><h1>YOUR <em>CHECKOUT.</em></h1><p>Enter your details and send your order to Tobz Shisanyama.</p></div>
+<div class="sandbox-notice"><strong>TEST CHECKOUT — SANDBOX ONLY</strong>This is a simulated payment test. No payment will be taken. Test orders will be marked PAID – SIMULATED and must not be treated as real paid orders.</div>
+<div id="checkout-empty" class="checkout-empty" hidden>Your bag is empty. <a href="menu.html">Go back to the menu.</a></div>
+<div class="checkout-layout" id="checkout-layout">
+<form class="checkout-form" id="checkout-form">
+<h2>YOUR DETAILS</h2>
+<div class="checkout-fields">
+<div class="checkout-field"><label for="customer-name">FULL NAME *</label><input id="customer-name" name="name" autocomplete="name" required maxlength="100" placeholder="Your name"></div>
+<div class="checkout-field"><label for="customer-phone">PHONE NUMBER *</label><input id="customer-phone" name="phone" autocomplete="tel" required maxlength="25" placeholder="e.g. 074 123 4567"></div>
+<div class="checkout-field full"><label for="order-method">COLLECTION OR DELIVERY *</label><select id="order-method" name="method" required><option value="Collection">Collection</option><option value="Delivery">Delivery</option></select></div>
+<div class="checkout-field full" id="address-field" hidden><label for="customer-address">DELIVERY ADDRESS *</label><textarea id="customer-address" name="address" maxlength="500" placeholder="Enter your delivery address"></textarea></div>
+<div class="checkout-field full"><label for="order-notes">ORDER NOTES (OPTIONAL)</label><textarea id="order-notes" name="notes" maxlength="500" placeholder="Any special instructions?"></textarea></div>
+</div>
+<button class="checkout-submit" id="place-order" type="submit">PLACE TEST ORDER · MARK AS PAID</button>
+<div class="checkout-status" id="checkout-status" role="status" aria-live="polite"></div>
+<a class="whatsapp-order" id="whatsapp-order" href="#" target="_blank" rel="noopener" hidden>↗ SEND COMPLETE ORDER ON WHATSAPP</a>
+<a class="checkout-back" href="menu.html">← BACK TO MENU</a>
+</form>
+<aside class="checkout-summary"><p class="eyebrow">DOUBLE-CHECK IT</p><h2>ORDER SUMMARY</h2><div id="checkout-items"></div><div class="checkout-grand-total"><span>TOTAL</span><strong id="checkout-total">R0.00</strong></div><p class="cart-note">Prices shown are based on the amounts selected on the menu. Delivery charges are not included.</p></aside>
+</div>
+</main>
+<footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer>
+<script src="checkout.js"></script>
+</body></html>
