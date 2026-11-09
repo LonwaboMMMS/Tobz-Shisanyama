@@ -78,14 +78,16 @@ export async function onRequestPost({ request, env }) {
   if (event.type !== "payment.succeeded") return new Response("Event ignored.", { status: 200 });
 
   const payment = event.payload || {};
-  const checkoutId = payment.metadata?.checkoutId;
-  if (!checkoutId || payment.status !== "succeeded" || payment.currency !== "ZAR") {
+  // Yoco echoes the metadata supplied when the checkout was created.
+  // place-order.js supplies metadata.orderId, so use that to find our order.
+  const orderId = payment.metadata?.orderId;
+  if (!orderId || payment.status !== "succeeded" || payment.currency !== "ZAR") {
     return new Response("Payment details incomplete.", { status: 400 });
   }
 
   const order = await env.DB.prepare(
-    "SELECT * FROM orders WHERE checkout_id = ?"
-  ).bind(checkoutId).first();
+    "SELECT * FROM orders WHERE order_id = ?"
+  ).bind(orderId).first();
 
   if (!order) return new Response("Order not found.", { status: 200 });
   if (Number(payment.amount) !== Number(order.total_cents)) {
