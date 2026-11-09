@@ -1,94 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#171714">
-  <meta name="description" content="Order your favourite shisanyama cuts online from Tobz Shisanyama.">
-  <title>Tobz Shisanyama | Fresh off the fire</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#171714"><meta name="description" content="Order shisanyama from Tobz. Choose how much you want to spend and we'll calculate your meat weight.">
+  <title>Tobz Shisanyama | Good food. Good fire.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#" aria-label="Tobz Shisanyama home">
-      <span class="brand-mark">T</span>
-      <span>TOBZ<span class="brand-light"> SHISANYAMA</span></span>
-    </a>
-    <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="#menu">Menu</a><a href="#about">Our story</a><a href="#contact">Contact</a>
-    </nav>
-    <button class="cart-trigger" id="open-cart" aria-label="Open shopping cart">
-      <span class="cart-icon">🛒</span><span>Cart</span><span class="cart-count" id="cart-count">0</span>
-    </button>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow"><span></span> GOOD FOOD. GOOD FIRE. GOOD TIMES.</p>
-        <h1>FRESH OFF<br>THE <em>FIRE.</em></h1>
-        <p class="hero-description">Your favourite shisanyama, just a few clicks away. Choose your cuts, pick your weight, and let us handle the rest.</p>
-        <a class="primary-button" href="#menu">ORDER YOUR MEAT <span>↗</span></a>
-        <div class="hero-note"><span class="fire-symbol">✦</span> REAL FLAVOUR. NO SHORTCUTS.</div>
-      </div>
-      <div class="hero-visual">
-        <div class="hero-image-placeholder">
-          <span class="placeholder-icon">🔥</span>
-          <span>YOUR FOOD PHOTOGRAPHY<br>WILL GO HERE</span>
-        </div>
-        <div class="hero-stamp"><strong>100%</strong><span>SHISANYAMA<br>GOODNESS</span></div>
-      </div>
-      <div class="hero-bottom">PORK <span>•</span> BEEF <span>•</span> WORS <span>•</span> MADE FOR THE FIRE</div>
-    </section>
-
-    <section class="menu-section" id="menu">
-      <div class="section-heading">
-        <div><p class="eyebrow">THE GOOD STUFF</p><h2>WHAT'S ON THE MENU?</h2></div>
-        <p>Pick your favourite cuts.<br>Choose your weight. Enjoy.</p>
-      </div>
-      <div class="category-tabs" role="group" aria-label="Filter products">
-        <button class="category-tab active" data-category="all">All meat</button>
-        <button class="category-tab" data-category="pork">Pork</button>
-        <button class="category-tab" data-category="beef">Beef</button>
-        <button class="category-tab" data-category="wors">Wors</button>
-      </div>
-      <div class="product-grid" id="product-grid">
-        <article class="product-card">
-          <div class="product-image-placeholder"><span>🥩</span><small>PRODUCT IMAGE</small></div>
-          <div class="product-info"><span class="product-category">PORK</span><h3>Product name</h3><p class="product-price">Price to be confirmed <span>/ kg</span></p></div>
-        </article>
-        <article class="product-card">
-          <div class="product-image-placeholder"><span>🥩</span><small>PRODUCT IMAGE</small></div>
-          <div class="product-info"><span class="product-category">BEEF</span><h3>Product name</h3><p class="product-price">Price to be confirmed <span>/ kg</span></p></div>
-        </article>
-        <article class="product-card">
-          <div class="product-image-placeholder"><span>🌭</span><small>PRODUCT IMAGE</small></div>
-          <div class="product-info"><span class="product-category">WORS</span><h3>Product name</h3><p class="product-price">Price to be confirmed <span>/ kg</span></p></div>
-        </article>
-      </div>
-      <p class="menu-footnote">Our menu and prices will be updated as products are added.</p>
-    </section>
-
-    <section class="about-section" id="about">
-      <div class="about-symbol">🔥</div>
-      <div><p class="eyebrow">MORE THAN JUST MEAT</p><h2>GOOD FOOD BRINGS<br>PEOPLE TOGETHER.</h2><p>At Tobz Shisanyama, we're all about great cuts, good company and proper shisanyama flavour. More about us coming soon.</p></div>
-    </section>
-
-    <section class="contact-strip" id="contact"><div><p class="eyebrow">READY TO EAT?</p><h2>LET'S GET THE FIRE GOING.</h2></div><a href="#menu" class="primary-button">BROWSE THE MENU ↗</a></section>
-  </main>
-
-  <footer><a class="brand footer-brand" href="#"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span id="year"></span> Tobz Shisanyama. All rights reserved.</span></footer>
-
-  <div class="cart-overlay" id="cart-overlay" aria-hidden="true">
-    <aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title">
-      <div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">SHOPPING CART</h2></div><button class="close-cart" id="close-cart" aria-label="Close cart">×</button></div>
-      <div class="cart-items" id="cart-items"><div class="empty-cart"><span>🛒</span><h3>Your cart is empty</h3><p>Some good meat would look great here.</p></div></div>
-      <div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><p class="cart-note" id="cart-note">Prices will appear once the menu is configured.</p><button class="checkout-button" id="checkout-button" disabled>CONTINUE TO CHECKOUT</button></div>
-    </aside>
-  </div>
-  <script src="script.js"></script>
-</body>
-</html>
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a>
+<nav class="desktop-nav"><a class="active" href="index.html">Home</a><a href="menu.html">Menu</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav>
+<button class="cart-trigger" id="open-cart"><span>Bag</span><span class="cart-count" id="cart-count">0</span></button></header>
+<main>
+<section class="hero home-hero"><div class="hero-copy"><p class="eyebrow"><span></span> GOOD FOOD. GOOD FIRE. GOOD TIMES.</p><h1>FRESH OFF<br>THE <em>FIRE.</em></h1><p class="hero-description">Your shisanyama favourites, on your terms. Choose what you want to spend and we'll work out how much meat that gets you.</p><a class="primary-button" href="menu.html">EXPLORE THE MENU <span>↗</span></a><div class="hero-note">✦ REAL FLAVOUR. NO SHORTCUTS.</div></div>
+<div class="hero-visual"><div class="hero-image-placeholder"><span class="placeholder-icon">🔥</span><span>YOUR FOOD PHOTOGRAPHY<br>WILL GO HERE</span></div><div class="hero-stamp"><strong>100%</strong><span>SHISANYAMA<br>GOODNESS</span></div></div><div class="hero-bottom">PORK <span>•</span> BEEF <span>•</span> WORS <span>•</span> MADE FOR THE FIRE</div></section>
+<section class="home-intro"><div><p class="eyebrow">SIMPLE AS THAT</p><h2>YOU PICK THE PRICE.<br>WE SORT THE WEIGHT.</h2></div><p>Want R50 worth of wors? Or R120 of pork? Enter your budget and see the exact weight you'll get before adding it to your bag.</p></section>
+<section class="quick-menu"><div class="section-heading"><div><p class="eyebrow">THE GOOD STUFF</p><h2>MEET THE MEAT.</h2></div><a class="text-link" href="menu.html">VIEW FULL MENU ↗</a></div><div class="quick-grid">
+<a class="quick-card" href="menu.html#pork"><span class="quick-emoji">🥩</span><span class="quick-type">PORK</span><strong>R105 <small>/ kg</small></strong><span class="quick-arrow">↗</span></a>
+<a class="quick-card" href="menu.html#beef"><span class="quick-emoji">🥩</span><span class="quick-type">BEEF</span><strong>R115 <small>/ kg</small></strong><span class="quick-arrow">↗</span></a>
+<a class="quick-card" href="menu.html#wors"><span class="quick-emoji">🌭</span><span class="quick-type">WORS</span><strong>R95 <small>/ kg</small></strong><span class="quick-arrow">↗</span></a></div></section>
+<section class="contact-strip"><div><p class="eyebrow">READY TO EAT?</p><h2>LET'S GET THE FIRE GOING.</h2></div><a href="menu.html" class="primary-button">START YOUR ORDER ↗</a></section>
+</main>
+<footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer>
+<nav class="mobile-nav"><a class="selected" href="index.html"><span>⌂</span>Home</a><a href="menu.html"><span>☷</span>Menu</a><button id="mobile-cart"><span>▣</span>Bag <i id="mobile-cart-count">0</i></button><a href="about.html"><span>✦</span>About</a><a href="contact.html"><span>⌖</span>Contact</a></nav>
+<div class="cart-overlay" id="cart-overlay" aria-hidden="true"><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">YOUR BAG</h2></div><button class="close-cart" id="close-cart">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><p class="cart-note">Delivery fees, if applicable, will be confirmed separately.</p><button class="checkout-button" id="checkout-button" disabled>CHECKOUT COMING SOON</button></div></aside></div>
+<script src="script.js"></script></body></html>
