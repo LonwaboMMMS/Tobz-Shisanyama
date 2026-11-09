@@ -3,14 +3,15 @@ const PRODUCTS = {
   beef: { name: "Beef", pricePerKg: 115 },
   wors: { name: "Wors", pricePerKg: 95 }
 };
-const EMAIL_TO = "lonwabommms@gmail.com";
-const EMAIL_FROM = "Tobz Shisanyama <onboarding@resend.dev>";
-const money = value => "R" + Number(value).toFixed(2);
-const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
-  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-}[char]));
 
 export async function onRequestPost({ request, env }) {
+  if (!env.YOCO_SECRET_KEY) {
+    return Response.json({ error: "Yoco is not configured yet." }, { status: 503 });
+  }
+  if (!env.DB) {
+    return Response.json({ error: "The orders database is not connected yet." }, { status: 503 });
+  }
+
   let body;
   try { body = await request.json(); }
   catch { return Response.json({ error: "Invalid request body." }, { status: 400 }); }
@@ -46,60 +47,62 @@ export async function onRequestPost({ request, env }) {
       id: submitted.id,
       name: product.name,
       amount: roundedAmount,
+      amountCents: Math.round(roundedAmount * 100),
       weightKg: (roundedAmount / product.pricePerKg).toFixed(2),
       pricePerKg: product.pricePerKg
     });
   }
 
-  const total = Math.round(items.reduce((sum, item) => sum + item.amount, 0) * 100) / 100;
-  const orderId = "TOBZ-TEST-" + Date.now().toString(36).toUpperCase();
-  const itemRows = items.map(item =>
-    "<tr><td style='padding:10px;border-bottom:1px solid #eee'>" + escapeHtml(item.name) + "</td><td style='padding:10px;border-bottom:1px solid #eee'>" + escapeHtml(item.weightKg) + " kg</td><td style='padding:10px;border-bottom:1px solid #eee'>" + money(item.amount) + "</td></tr>"
-  ).join("");
-
-  const html = `
-    <div style="font-family:Arial,sans-serif;color:#222;max-width:640px;margin:auto">
-      <div style="background:#171714;color:#fff;padding:22px"><h1 style="margin:0;font-size:22px">TOBZ SHISANYAMA</h1><p style="color:#f26a21;margin:8px 0 0">NEW SANDBOX ORDER</p></div>
-      <div style="padding:22px">
-        <p style="background:#fff0e6;color:#8e3c14;padding:12px"><strong>PAID — SIMULATED TEST PAYMENT</strong><br>No money was collected. This is a test order only.</p>
-        <h2>Order ${escapeHtml(orderId)}</h2>
-        <p><strong>Customer:</strong> ${escapeHtml(name)}<br><strong>Phone:</strong> ${escapeHtml(phone)}<br><strong>Method:</strong> ${escapeHtml(method)}<br>${address ? "<strong>Address:</strong> " + escapeHtml(address) + "<br>" : ""}${notes ? "<strong>Notes:</strong> " + escapeHtml(notes) : ""}</p>
-        <table style="width:100%;border-collapse:collapse;text-align:left"><thead><tr><th style="padding:10px">Item</th><th style="padding:10px">Weight</th><th style="padding:10px">Amount</th></tr></thead><tbody>${itemRows}</tbody></table>
-        <h2 style="text-align:right">Total: ${money(total)}</h2>
-        <p style="font-size:12px;color:#777">Payment status: PAID – SIMULATED. Live payment processing is not enabled.</p>
-      </div>
-    </div>`;
-
-  let emailSent = false;
-  if (env.RESEND_API_KEY) {
-    try {
-      const emailResponse = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + env.RESEND_API_KEY,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          from: EMAIL_FROM,
-          to: [EMAIL_TO],
-          subject: "[TEST ORDER] " + orderId + " — " + money(total),
-          html
-        })
-      });
-      emailSent = emailResponse.ok;
-      if (!emailSent) console.error("Resend email request failed:", emailResponse.status, await emailResponse.text());
-    } catch (error) {
-      console.error("Resend request error:", error);
-    }
-  } else {
-    console.error("RESEND_API_KEY is not configured in Cloudflare Pages.");
+  const totalCents = items.reduce((sum, item) => sum + item.amountCents, 0);
+  if (totalCents < 200) {
+    return Response.json({ error: "The minimum Yoco payment is R2.00." }, { status: 400 });
   }
 
-  return Response.json({
-    orderId,
-    paymentStatus: "PAID_SIMULATED",
-    emailSent,
-    items,
-    total
-  });
+  const orderId = "TOBZ-" + crypto.randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase();
+  const customerData = { name, phone, method, address, notes };
+  const origin = new URL(request.url).origin;
+
+  try {
+    await env.DB.prepare(
+      "INSERT INTO orders (order_id, customer_json, items_json, total_cents, currency, payment_status, email_status) VALUES (?, ?, ?, ?, 'ZAR', 'pending', 'pending')"
+    ).bind(orderId, JSON.stringify(customerData), JSON.stringify(items), totalCents).run();
+
+    const yocoResponse = await fetch("https://payments.yoco.com/api/checkouts", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + env.YOCO_SECRET_KEY,
+        "Content-Type": "application/json",
+        "Idempotency-Key": orderId
+      },
+      body: JSON.stringify({
+        amount: totalCents,
+        currency: "ZAR",
+        successUrl: origin + "/payment-return.html?order=" + encodeURIComponent(orderId),
+        cancelUrl: origin + "/checkout.html?payment=cancelled",
+        failureUrl: origin + "/checkout.html?payment=failed",
+        clientReferenceId: orderId,
+        metadata: { orderId }
+      })
+    });
+
+    const checkout = await yocoResponse.json().catch(() => ({}));
+    if (!yocoResponse.ok || !checkout.id || !checkout.redirectUrl) {
+      console.error("Yoco checkout creation failed:", yocoResponse.status, checkout);
+      await env.DB.prepare("UPDATE orders SET payment_status = 'checkout_failed' WHERE order_id = ?").bind(orderId).run();
+      return Response.json({ error: "Yoco could not start the payment. Please try again." }, { status: 502 });
+    }
+
+    await env.DB.prepare("UPDATE orders SET checkout_id = ? WHERE order_id = ?")
+      .bind(checkout.id, orderId).run();
+
+    return Response.json({
+      orderId,
+      paymentStatus: "pending",
+      redirectUrl: checkout.redirectUrl,
+      total: totalCents / 100
+    });
+  } catch (error) {
+    console.error("Order checkout error:", error);
+    return Response.json({ error: "We could not create your checkout. Please try again." }, { status: 500 });
+  }
 }
