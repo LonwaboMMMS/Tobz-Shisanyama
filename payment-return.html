@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#171714">
+<title>Payment status | Tobz Shisanyama</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><nav class="desktop-nav"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav></header>
+<main class="checkout-page">
+<div class="checkout-heading"><p class="eyebrow">YOCO CHECKOUT</p><h1>PAYMENT <em>RECEIVED?</em></h1>
+<p>Thank you. Yoco is sending us your payment confirmation.</p></div>
+<div class="sandbox-notice"><strong>WE ARE VERIFYING YOUR PAYMENT</strong>This page alone does not confirm payment. Your order will only be marked as paid and the order notification email sent after our server receives and verifies Yoco's payment webhook. This may take a short moment.</div>
+<p id="return-order" class="checkout-status visible"></p>
+<div style="margin-top:28px"><a class="checkout-submit" href="index.html" style="display:inline-block;text-decoration:none;text-align:center">RETURN TO HOME</a></div>
+</main>
+<footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer>
+<script>
+document.querySelectorAll(".year").forEach(el => el.textContent = new Date().getFullYear());
+const order = new URLSearchParams(location.search).get("order");
+document.getElementById("return-order").textContent = order ? "Order reference: " + order : "Payment verification is in progress.";
+</script>
+</body></html>
