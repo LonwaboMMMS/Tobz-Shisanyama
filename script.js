@@ -30,10 +30,10 @@ function addProduct(id){
  if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
 }
 function renderCart(){
- const count=cart.reduce((sum,item)=>sum+item.amount,0);
- const total=count;
+ const count=cart.length;
+ const total=cart.reduce((sum,item)=>sum+item.amount,0);
  const countEl=byId('cart-count'),mobileCount=byId('mobile-cart-count'),totalEl=byId('cart-total'),itemsEl=byId('cart-items'),checkout=byId('checkout-button');
- if(countEl)countEl.textContent=money(count).replace('ZAR','').replace('R','').trim();
+ if(countEl)countEl.textContent=count;
  if(mobileCount)mobileCount.textContent=cart.length;
  if(totalEl)totalEl.textContent=money(total);
  if(checkout)checkout.disabled=!cart.length;
