@@ -55,5 +55,5 @@ byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('c
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCart()});
 byId('cart-items')?.addEventListener('click',event=>{const button=event.target.closest('[data-remove]');if(!button)return;cart=cart.filter(item=>item.id!==button.dataset.remove);saveCart();renderCart()});
 byId('cart-items')?.addEventListener('change',event=>{const input=event.target.closest('[data-cart-amount]');if(!input)return;const amount=Number(input.value);if(!Number.isFinite(amount)||amount<=0){renderCart();return}const item=cart.find(entry=>entry.id===input.dataset.cartAmount);if(item)item.amount=Math.round(amount*100)/100;saveCart();renderCart()});
-byId('checkout-button')?.addEventListener('click',()=>alert('Your bag is ready. We will add delivery details and secure checkout in the next stage.'));
+byId('checkout-button')?.addEventListener('click',()=>{if(cart.length)window.location.href='checkout.html'});
 renderCart();
