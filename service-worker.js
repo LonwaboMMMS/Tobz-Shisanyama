@@ -1,5 +1,5 @@
 /* Tobz Shisanyama PWA service worker */
-const CACHE_NAME = "tobz-shisanyama-v4";
+const CACHE_NAME = "tobz-shisanyama-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,6 +9,9 @@ const APP_SHELL = [
   "./checkout.html",
   "./payment-return.html",
   "./style.css",
+  "./images/Pork.png",
+  "./images/Beef.png",
+  "./images/Wors.png",
   "./script.js",
   "./checkout.js",
   "./manifest.json",
