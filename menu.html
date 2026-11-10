@@ -1,5 +1,14 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#171714"><title>Menu | Tobz Shisanyama</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#171714"><title>Menu | Tobz Shisanyama</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tobz Shisanyama">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-TileColor" content="#171714">
+</head><body>
 <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><nav class="desktop-nav"><a href="index.html">Home</a><a class="active" href="menu.html">Menu</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav><button class="cart-trigger" id="open-cart"><span>Bag</span><span class="cart-count" id="cart-count">0</span></button></header>
 <main><section class="page-hero"><p class="eyebrow">PICK YOUR FAVOURITES</p><h1>THE <em>MENU.</em></h1><p>Choose a meat, enter how much you'd like to spend, and we'll calculate the weight for you.</p></section>
 <section class="menu-section menu-page"><div class="price-explainer"><span class="explainer-icon">₊</span><div><strong>YOUR MONEY, YOUR MEAT.</strong><p>Enter an amount in rand. The weight updates automatically using the price per kilogram.</p></div></div>
@@ -10,4 +19,12 @@
 <article class="product-card" id="wors"><div class="product-image-placeholder"><span>🌭</span><small>ADD YOUR WORS PHOTO</small></div><div class="product-info"><span class="product-category">WORS</span><h3>Wors</h3><p class="product-price">R95.00 <span>/ kg</span></p><label class="amount-label">HOW MUCH WOULD YOU LIKE TO SPEND?<span class="amount-input-wrap"><b>R</b><input type="number" min="1" step="1" value="50" data-amount="wors" inputmode="decimal"></span></label><div class="weight-result"><span>YOU'LL GET</span><strong data-weight-result="wors">0.53 kg</strong></div><button class="add-button" data-add="wors">ADD TO BAG <span>＋</span></button></div></article>
 </div><p class="menu-footnote">Weights are estimates displayed to two decimal places. The entered rand amount determines the line price.</p></section></main>
 <footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer><nav class="mobile-nav"><a href="index.html"><span>⌂</span>Home</a><a class="selected" href="menu.html"><span>☷</span>Menu</a><button id="mobile-cart"><span>▣</span>Bag <i id="mobile-cart-count">0</i></button><a href="about.html"><span>✦</span>About</a><a href="contact.html"><span>⌖</span>Contact</a></nav>
-<div class="cart-overlay" id="cart-overlay" aria-hidden="true"><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">YOUR BAG</h2></div><button class="close-cart" id="close-cart">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><p class="cart-note">Delivery fees, if applicable, will be confirmed separately.</p><button class="checkout-button" id="checkout-button" disabled>CHECKOUT COMING SOON</button></div></aside></div><script src="script.js"></script></body></html>
+<div class="cart-overlay" id="cart-overlay" aria-hidden="true"><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">YOUR BAG</h2></div><button class="close-cart" id="close-cart">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><p class="cart-note">Delivery fees, if applicable, will be confirmed separately.</p><button class="checkout-button" id="checkout-button" disabled>CHECKOUT COMING SOON</button></div></aside></div><script src="script.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch(() => {});
+  });
+}
+</script>
+</body></html>
