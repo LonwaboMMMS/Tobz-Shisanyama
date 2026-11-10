@@ -39,7 +39,7 @@ self.addEventListener("fetch", event => {
   if (request.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
 
   // Always try the live page first. A cached page is only an offline fallback.
-  if (request.mode === "navigate" {
+  if (request.mode === "navigate") {
     event.respondWith((async () => {
       try {
         const response = await fetch(request, { cache: "no-store" });
