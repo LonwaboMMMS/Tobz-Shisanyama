@@ -19,17 +19,12 @@ export async function onRequestPost({ request, env }) {
   const customer = body?.customer || {};
   const name = String(customer.name || "").trim();
   const phone = String(customer.phone || "").trim();
-  const method = customer.method === "Delivery" ? "Delivery" : "Collection";
-  const address = String(customer.address || "").trim();
   const notes = String(customer.notes || "").trim();
 
   if (!name || name.length > 100 || !phone || phone.length > 25) {
     return Response.json({ error: "Please provide a valid name and phone number." }, { status: 400 });
   }
-  if (method === "Delivery" && !address) {
-    return Response.json({ error: "A delivery address is required." }, { status: 400 });
-  }
-  if (address.length > 500 || notes.length > 500 || !Array.isArray(body.items) || body.items.length < 1 || body.items.length > 3) {
+  if (notes.length > 500 || !Array.isArray(body.items) || body.items.length < 1 || body.items.length > 3) {
     return Response.json({ error: "The order details are invalid." }, { status: 400 });
   }
 
@@ -59,7 +54,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const orderId = "TOBZ-" + crypto.randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase();
-  const customerData = { name, phone, method, address, notes };
+  const customerData = { name, phone, method: "Collection", address: "", notes };
   const origin = new URL(request.url).origin;
 
   try {
