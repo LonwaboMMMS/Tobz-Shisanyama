@@ -11,8 +11,8 @@ const APP_SHELL = [
   "./script.js",
   "./checkout.js",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-192.svg",
+  "./icons/icon-512.svg"
 ];
 
 self.addEventListener("install", event => {
