@@ -5,6 +5,7 @@ const CHECKOUT_PRODUCTS = {
   wors: { name: "Wors", pricePerKg: 95 }
 };
 const CHECKOUT_CART_KEY = "tobz-shisanyama-cart-v1";
+const LAST_ORDER_KEY = "tobz-last-order-v1";
 const formatMoney = value => new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value);
 const checkoutCart = (() => {
   try { return JSON.parse(localStorage.getItem(CHECKOUT_CART_KEY)) || []; }
@@ -18,15 +19,8 @@ const totalContainer = document.getElementById("checkout-total");
 const form = document.getElementById("checkout-form");
 const statusBox = document.getElementById("checkout-status");
 const submitButton = document.getElementById("place-order");
-const addressField = document.getElementById("address-field");
-const addressInput = document.getElementById("customer-address");
 
 document.querySelectorAll(".year").forEach(el => el.textContent = new Date().getFullYear());
-document.getElementById("order-method").addEventListener("change", event => {
-  const delivery = event.target.value === "Delivery";
-  addressField.hidden = !delivery;
-  addressInput.required = delivery;
-});
 
 const paymentMessage = new URLSearchParams(location.search).get("payment");
 if (paymentMessage) {
@@ -59,8 +53,8 @@ form.addEventListener("submit", async event => {
   const customer = {
     name: form.elements.name.value.trim(),
     phone: form.elements.phone.value.trim(),
-    method: form.elements.method.value,
-    address: form.elements.address.value.trim(),
+    method: "Collection",
+    address: "",
     notes: form.elements.notes.value.trim()
   };
 
@@ -72,6 +66,26 @@ form.addEventListener("submit", async event => {
     });
     const result = await response.json();
     if (!response.ok || !result.redirectUrl) throw new Error(result.error || "Yoco checkout could not be started.");
+
+    const orderItems = validItems.map(item => {
+      const product = CHECKOUT_PRODUCTS[item.id];
+      return {
+        name: product.name,
+        weightKg: (item.amount / product.pricePerKg).toFixed(2),
+        amount: item.amount
+      };
+    });
+    try {
+      localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({
+        orderId: result.orderId,
+        customer: { name: customer.name, phone: customer.phone, notes: customer.notes },
+        items: orderItems,
+        total: checkoutTotal,
+        savedAt: Date.now()
+      }));
+    } catch (storageError) {
+      console.warn("Could not save local order summary for WhatsApp:", storageError);
+    }
 
     localStorage.removeItem(CHECKOUT_CART_KEY);
     statusBox.className = "checkout-status visible";
