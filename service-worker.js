@@ -1,5 +1,5 @@
 /* Tobz Shisanyama PWA service worker */
-const CACHE_NAME = "tobz-shisanyama-v3";
+const CACHE_NAME = "tobz-shisanyama-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
