@@ -77,13 +77,15 @@ export async function onRequestPost({ request, env }) {
 
   if (event.type !== "payment.succeeded") return new Response("Event ignored.", { status: 200 });
 
-  const payment = event.payload || {};
-  // Yoco's Checkout API payment notification documents metadata.checkoutId.
-  // We also accept metadata.orderId when it is echoed from our checkout request.
-  // The checkout ID is saved against the order by place-order.js.
-  const orderId = payment.metadata?.orderId;
-  const checkoutId = payment.metadata?.checkoutId;
-  if ((!orderId && !checkoutId) || payment.status !== "succeeded" || payment.currency !== "ZAR") {
+  // Checkout API webhooks use payload; tolerate data as well for compatibility
+  // with alternate Yoco event envelopes.
+  const payment = event.payload || event.data || {};
+  const metadata = payment.metadata || {};
+  const orderId = metadata.orderId || metadata.clientReferenceId || payment.clientReferenceId;
+  const checkoutId = metadata.checkoutId || payment.checkoutId;
+  // payment.succeeded itself is Yoco's authoritative success event. Some
+  // webhook variants omit the redundant payload.status field.
+  if ((!orderId && !checkoutId) || (payment.status && payment.status !== "succeeded") || payment.currency !== "ZAR") {
     return new Response("Payment details incomplete.", { status: 400 });
   }
 
@@ -137,7 +139,7 @@ export async function onRequestPost({ request, env }) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: EMAIL_FROM,
+        from: env.RESEND_FROM_EMAIL || EMAIL_FROM,
         to: [EMAIL_TO],
         subject: email.subject,
         html: email.html
