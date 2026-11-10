@@ -6,6 +6,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tobz Shisanyama">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="msapplication-TileColor" content="#171714">
 </head>
 <body>
 <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><nav class="desktop-nav"><a href="index.html">Home</a><a href="menu.html">Menu</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav><a class="cart-trigger" href="menu.html">Back to menu</a></header>
@@ -33,4 +42,12 @@
 </main>
 <footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer>
 <script src="checkout.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch(() => {});
+  });
+}
+</script>
 </body></html>
