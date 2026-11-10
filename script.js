@@ -18,14 +18,6 @@ function updateWeight(productId){
  const amount=Number(input.value),product=products.find(p=>p.id===productId);
  output.textContent=Number.isFinite(amount)&&amount>0?(weightFor(amount,product.pricePerKg).toFixed(2)+' kg'):'— kg';
 }
-function addProduct(id){
- const input=document.querySelector('[data-amount="'+id+'"]');
- const amount=Number(input?.value),product=products.find(p=>p.id===id);
- if(!product||!Number.isFinite(amount)||amount<=0){input?.focus();return}
- const existing=cart.find(item=>item.id===id);
- if(existing){existing.amount=Math.round((existing.amount+amount)*100)/100}
- else cart.push({id,amount});
- saveCart();
 // Menu category tabs: update the selected tab and filter the product cards.
 const categoryTabs = document.querySelectorAll('.category-tab');
 const productCards = document.querySelectorAll('.product-card');
@@ -51,6 +43,14 @@ if (categoryTabs.length && productCards.length) {
  setMenuCategory(['pork', 'beef', 'wors'].includes(initialCategory) ? initialCategory : 'all');
 }
 
+function addProduct(id){
+ const input=document.querySelector('[data-amount="'+id+'"]');
+ const amount=Number(input?.value),product=products.find(p=>p.id===id);
+ if(!product||!Number.isFinite(amount)||amount<=0){input?.focus();return}
+ const existing=cart.find(item=>item.id===id);
+ if(existing){existing.amount=Math.round((existing.amount+amount)*100)/100}
+ else cart.push({id,amount});
+ saveCart();
 renderCart();
  const button=document.querySelector('[data-add="'+id+'"]');
  if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
