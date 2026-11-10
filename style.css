@@ -13,3 +13,8 @@
 
 /* Ensure filtered menu items are hidden in every browser. */
 .product-card[hidden]{display:none!important}
+
+
+/* Hero photography: fill the existing rectangular frame. */
+.hero-image-placeholder{overflow:hidden}
+.hero-image-placeholder img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
