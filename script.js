@@ -25,7 +25,33 @@ function addProduct(id){
  const existing=cart.find(item=>item.id===id);
  if(existing){existing.amount=Math.round((existing.amount+amount)*100)/100}
  else cart.push({id,amount});
- saveCart();renderCart();
+ saveCart();
+// Menu category tabs: update the selected tab and filter the product cards.
+const categoryTabs = document.querySelectorAll('.category-tab');
+const productCards = document.querySelectorAll('.product-card');
+function setMenuCategory(category) {
+ categoryTabs.forEach(tab => {
+  const selected = tab.getAttribute('href') === '#' + category;
+  tab.classList.toggle('active', selected);
+  if (selected) tab.setAttribute('aria-current', 'true');
+  else tab.removeAttribute('aria-current');
+ });
+ productCards.forEach(card => {
+  card.hidden = category !== 'all' && card.id !== category;
+ });
+}
+if (categoryTabs.length && productCards.length) {
+ categoryTabs.forEach(tab => tab.addEventListener('click', event => {
+  event.preventDefault();
+  const category = tab.getAttribute('href').slice(1);
+  setMenuCategory(category);
+  history.replaceState(null, '', '#' + category);
+ }));
+ const initialCategory = location.hash.slice(1);
+ setMenuCategory(['pork', 'beef', 'wors'].includes(initialCategory) ? initialCategory : 'all');
+}
+
+renderCart();
  const button=document.querySelector('[data-add="'+id+'"]');
  if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
 }
