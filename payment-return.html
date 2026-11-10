@@ -14,12 +14,44 @@
 <p>Thank you. Yoco is sending us your payment confirmation.</p></div>
 <div class="sandbox-notice"><strong>WE ARE VERIFYING YOUR PAYMENT</strong>This page alone does not confirm payment. Your order will only be marked as paid and the order notification email sent after our server receives and verifies Yoco's payment webhook. This may take a short moment.</div>
 <p id="return-order" class="checkout-status visible"></p>
-<div style="margin-top:28px"><a class="checkout-submit" href="index.html" style="display:inline-block;text-decoration:none;text-align:center">RETURN TO HOME</a></div>
+<section id="whatsapp-confirmation" style="margin-top:28px;padding:24px;background:#f2f0eb;border-radius:12px;color:#171714">
+  <p class="eyebrow" style="margin-top:0">NEED CONFIRMATION?</p>
+  <h2 style="font-family:Oswald,Arial,sans-serif;margin:0 0 10px">CHECK YOUR ORDER WITH US.</h2>
+  <p style="margin:0 0 18px">Send us your order details on WhatsApp and ask our team to confirm that we've received it.</p>
+  <a id="whatsapp-order-link" class="checkout-submit" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;text-align:center;background:#168b50;color:#fff">MESSAGE US ON WHATSAPP</a>
+  <p style="font-size:13px;line-height:1.5;margin:14px 0 0">WhatsApp will open with a message ready for you to review and send.</p>
+</section>
+<div style="margin-top:28px"><a class="checkout-back" href="index.html">← RETURN TO HOME</a></div>
 </main>
 <footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama.</span></footer>
 <script>
 document.querySelectorAll(".year").forEach(el => el.textContent = new Date().getFullYear());
-const order = new URLSearchParams(location.search).get("order");
-document.getElementById("return-order").textContent = order ? "Order reference: " + order : "Payment verification is in progress.";
+const orderId = new URLSearchParams(location.search).get("order");
+document.getElementById("return-order").textContent = orderId ? "Order reference: " + orderId : "Payment verification is in progress.";
+
+const whatsappLink = document.getElementById("whatsapp-order-link");
+const orderSummaryKey = "tobz-last-order-v1";
+let savedOrder = null;
+try { savedOrder = JSON.parse(localStorage.getItem(orderSummaryKey) || "null"); } catch {}
+const isMatchingOrder = savedOrder && orderId && savedOrder.orderId === orderId;
+
+let message = "Hi Tobz Shisanyama, I have just completed checkout. Could you please confirm that you received my order?\n\n";
+message += "Order reference: " + (orderId || "Not available");
+if (isMatchingOrder) {
+  const customer = savedOrder.customer || {};
+  message += "\nCustomer: " + (customer.name || "Not provided");
+  message += "\nPhone: " + (customer.phone || "Not provided");
+  message += "\nCollection: Customer collection";
+  message += "\n\nORDER DETAILS";
+  (savedOrder.items || []).forEach(item => {
+    message += "\n• " + item.name + " — " + item.weightKg + " kg — R" + Number(item.amount).toFixed(2);
+  });
+  message += "\n\nTotal: R" + Number(savedOrder.total).toFixed(2);
+  if (customer.notes) message += "\nOrder notes: " + customer.notes;
+} else {
+  message += "\nI can provide my order details if needed.";
+}
+message += "\n\nPlease let me know if the order has come through. Thank you.";
+whatsappLink.href = "https://wa.me/27742795157?text=" + encodeURIComponent(message);
 </script>
 </body></html>
