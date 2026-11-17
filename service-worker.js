@@ -1,5 +1,5 @@
 /* Tobz Shisanyama PWA service worker */
-const CACHE_NAME = "tobz-shisanyama-v8";
+const CACHE_NAME = "tobz-shisanyama-v9";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./contact.html",
   "./checkout.html",
   "./payment-return.html",
+  "./offline.html",
   "./style.css",
   "./images/Pork.png",
   "./images/Beef.png",
@@ -23,8 +24,7 @@ const APP_SHELL = [
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    // Cache each resource independently so one optional/missing asset cannot
-    // prevent the service worker from installing.
+    // Cache resources independently so one missing/optional file cannot block installation.
     await Promise.allSettled(APP_SHELL.map(async path => {
       const response = await fetch(path, { cache: "reload" });
       if (response.ok) await cache.put(path, response);
@@ -47,13 +47,13 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Leave forms, payment/API requests, and third-party services untouched.
+  // Do not interfere with POST requests, payment/API calls, or third-party services.
   if (request.method !== "GET" || url.origin !== self.location.origin ||
       url.pathname.includes("/api/")) return;
 
   event.respondWith((async () => {
     try {
-      // Network-first: users always receive the deployed version when online.
+      // Network-first keeps the app fresh whenever a connection is available.
       const response = await fetch(request, { cache: "no-store" });
       if (response && response.ok) {
         const cache = await caches.open(CACHE_NAME);
@@ -63,11 +63,20 @@ self.addEventListener("fetch", event => {
     } catch (error) {
       const cached = await caches.match(request);
       if (cached) return cached;
+
+      // Any page that cannot be loaded offline gets the branded offline screen.
       if (request.mode === "navigate") {
+        const offline = await caches.match("./offline.html");
+        if (offline) return offline;
         const home = await caches.match("./index.html");
         if (home) return home;
       }
-      throw error;
+
+      return new Response("You are offline. Please reconnect and try again.", {
+        status: 503,
+        statusText: "Service Unavailable",
+        headers: { "Content-Type": "text/plain; charset=utf-8" }
+      });
     }
   })());
 });
