@@ -35,10 +35,50 @@
 <div class="cart-overlay" id="cart-overlay" aria-hidden="true"><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">YOUR BAG</h2></div><button class="close-cart" id="close-cart">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><button class="checkout-button" id="checkout-button" disabled>CHECKOUT</button></div></aside></div>
 <script src="script.js"></script>
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch(() => {});
+(() => {
+  const showSWStatus = (message, isError = false) => {
+    let box = document.getElementById("sw-debug-status");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "sw-debug-status";
+      box.style.cssText = "position:fixed;z-index:99999;left:10px;right:10px;bottom:76px;padding:12px;background:#171714;color:#fff;font:13px/1.4 sans-serif;border:2px solid " + (isError ? "#ff5b45" : "#ff7400") + ";border-radius:8px;overflow-wrap:anywhere";
+      document.body.appendChild(box);
+    }
+    box.textContent = "PWA status: " + message;
+    box.style.borderColor = isError ? "#ff5b45" : "#ff7400";
+  };
+
+  if (!("serviceWorker" in navigator)) {
+    showSWStatus("This browser does not support service workers.", true);
+    return;
+  }
+
+  window.addEventListener("load", async () => {
+    try {
+      showSWStatus("Registering service worker…");
+      const registration = await navigator.serviceWorker.register("./service-worker.js", {
+        scope: "./",
+        updateViaCache: "none"
+      });
+      showSWStatus("Registered. Waiting for activation…");
+
+      await navigator.serviceWorker.ready;
+      showSWStatus("Active. Page control: " + (navigator.serviceWorker.controller ? "YES" : "NOT YET — refresh this page"));
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        showSWStatus("Active and controlling this page.");
+      });
+
+      if (registration.installing) {
+        registration.installing.addEventListener("statechange", event => {
+          showSWStatus("Worker state: " + event.target.state);
+        });
+      }
+    } catch (error) {
+      showSWStatus("REGISTRATION FAILED: " + (error && error.message ? error.message : String(error)), true);
+      console.error("Tobz service worker registration failed:", error);
+    }
   });
-}
+})();
 </script>
 </body></html>
