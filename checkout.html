@@ -40,9 +40,15 @@
 <footer><a class="brand footer-brand" href="index.html"><span class="brand-mark">T</span><span>TOBZ<span class="brand-light"> SHISANYAMA</span></span></a><span>© <span class="year"></span> Tobz Shisanyama. Developed by Reverb Daily Media.</span></footer>
 <script src="checkout.js"></script>
 <script>
+/* Offline/PWA mode disabled: remove any previously installed worker and its caches. */
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js", { scope: "./" }).catch(() => {});
+  window.addEventListener("load", async () => {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map(registration => registration.unregister()));
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(key => key.startsWith("tobz-shisanyama-")).map(key => caches.delete(key)));
+    }
   });
 }
 </script>
