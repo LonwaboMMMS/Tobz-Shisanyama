@@ -1,8 +1,10 @@
 // Tobz Shisanyama checkout: order creation and redirect to Yoco's hosted payment page.
 const CHECKOUT_PRODUCTS = {
   pork: { name: "Pork", pricePerKg: 105 },
-  beef: { name: "Beef", pricePerKg: 115 },
-  wors: { name: "Wors", pricePerKg: 95 }
+  beef: { name: "Beef", pricePerKg: 125 },
+  wors: { name: "Wors", pricePerKg: 105 },
+  "cow-liver": { name: "Cow Liver", pricePerKg: 105 },
+  "cow-fat": { name: "Cow Fat", pricePerKg: 75 }
 };
 const CHECKOUT_CART_KEY = "tobz-shisanyama-cart-v1";
 const LAST_ORDER_KEY = "tobz-last-order-v1";
