@@ -47,4 +47,3 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --title "Tobz Shisanyama Android build ${RUN_NUMBER}" \
             --notes "Automatically built Android APK from commit ${GITHUB_SHA}." \
-            --prerelease
