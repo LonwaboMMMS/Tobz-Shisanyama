@@ -1,10 +1,10 @@
 // Tobz Shisanyama: price-first ordering. Customers enter rand; weight is calculated from the price per kg.
 const products=[
- {id:'pork',name:'Pork',category:'Pork',pricePerKg:105},
- {id:'beef',name:'Beef',category:'Beef',pricePerKg:125},
- {id:'wors',name:'Wors',category:'Wors',pricePerKg:105},
- {id:'cow-liver',name:'Isibindi',category:'Beef',pricePerKg:105},
- {id:'cow-fat',name:'Umhlehlo',category:'Beef',pricePerKg:75}
+ {id:'pork',name:'Pork',category:'Pork',pricePerKg:105,minimumAmount:40},
+ {id:'beef',name:'Beef',category:'Beef',pricePerKg:125,minimumAmount:50},
+ {id:'wors',name:'Wors',category:'Wors',pricePerKg:105,minimumAmount:30},
+ {id:'cow-liver',name:'Isibindi',category:'Beef',pricePerKg:105,minimumAmount:30},
+ {id:'cow-fat',name:'Umhlehlo',category:'Beef',pricePerKg:75,minimumAmount:15}
 ];
 const CART_KEY='tobz-shisanyama-cart-v1';
 let cart=loadCart();
@@ -49,13 +49,13 @@ if (categoryTabs.length && productCards.length) {
 function addProduct(id){
  const input=document.querySelector('[data-amount="'+id+'"]');
  const amount=Number(input?.value),product=products.find(p=>p.id===id);
- if(!product||!Number.isFinite(amount)||amount<=0){input?.focus();return}
+ if(!product||!Number.isFinite(amount)||amount<product.minimumAmount){if(input){input.setCustomValidity('Minimum order is '+money(product?.minimumAmount||1)+'.');input.reportValidity();input.setCustomValidity('');input.focus()}return}
  const additions = [{id,amount}];
  if(id==='cow-liver') {
   const fatToggle=document.querySelector('[data-fat-toggle]');
   const fatInput=document.querySelector('[data-amount="cow-fat"]');
   const fatAmount=Number(fatInput?.value);
-  if(fatToggle?.checked && (!Number.isFinite(fatAmount)||fatAmount<=0)){fatInput?.focus();return}
+  if(fatToggle?.checked && (!Number.isFinite(fatAmount)||fatAmount<products.find(p=>p.id==='cow-fat').minimumAmount)){if(fatInput){fatInput.setCustomValidity('Minimum order for Umhlehlo is R15.');fatInput.reportValidity();fatInput.setCustomValidity('');fatInput.focus()}return}
   if(fatToggle?.checked) additions.push({id:'cow-fat',amount:fatAmount});
  }
  additions.forEach(addition=>{
@@ -98,6 +98,6 @@ byId('open-cart')?.addEventListener('click',openCart);byId('mobile-cart')?.addEv
 byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('cart-overlay'))closeCart()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCart()});
 byId('cart-items')?.addEventListener('click',event=>{const button=event.target.closest('[data-remove]');if(!button)return;cart=cart.filter(item=>item.id!==button.dataset.remove);saveCart();renderCart()});
-byId('cart-items')?.addEventListener('change',event=>{const input=event.target.closest('[data-cart-amount]');if(!input)return;const amount=Number(input.value);if(!Number.isFinite(amount)||amount<=0){renderCart();return}const item=cart.find(entry=>entry.id===input.dataset.cartAmount);if(item)item.amount=Math.round(amount*100)/100;saveCart();renderCart()});
+byId('cart-items')?.addEventListener('change',event=>{const input=event.target.closest('[data-cart-amount]');if(!input)return;const amount=Number(input.value);const product=products.find(p=>p.id===input.dataset.cartAmount);if(!product||!Number.isFinite(amount)||amount<product.minimumAmount){input.setCustomValidity('Minimum order is '+money(product?.minimumAmount||1)+'.');input.reportValidity();input.setCustomValidity('');renderCart();return}const item=cart.find(entry=>entry.id===input.dataset.cartAmount);if(item)item.amount=Math.round(amount*100)/100;saveCart();renderCart()});
 byId('checkout-button')?.addEventListener('click',()=>{if(cart.length)window.location.href='checkout.html'});
 renderCart();
