@@ -370,6 +370,14 @@ private fun BagScreen(
                             Text("R${"%.2f".format(line.amount)}", fontWeight = FontWeight.Bold)
                         }
                         Text("${"%.2f".format(line.amount / meat.price)} kg · R${meat.price}/kg", color = Muted, fontSize = 12.sp)
+                        OutlinedTextField(
+                            value = line.amount.toString(),
+                            onValueChange = { value -> value.toDoubleOrNull()?.let { if (it > 0) onChange(line.id, it) } },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Spend amount (R)") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                        )
                         TextButton(onClick = { onRemove(line.id) }) { Text("REMOVE", color = Orange) }
                     }
                 }
