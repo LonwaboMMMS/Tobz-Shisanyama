@@ -1,10 +1,10 @@
 // Tobz Shisanyama checkout: order creation and redirect to Yoco's hosted payment page.
 const CHECKOUT_PRODUCTS = {
-  pork: { name: "Pork", pricePerKg: 105 },
-  beef: { name: "Beef", pricePerKg: 125 },
-  wors: { name: "Wors", pricePerKg: 105 },
-  "cow-liver": { name: "Cow Liver", pricePerKg: 105 },
-  "cow-fat": { name: "Cow Fat", pricePerKg: 75 }
+  pork: { name: "Pork", pricePerKg: 105, minimumAmount: 40 },
+  beef: { name: "Beef", pricePerKg: 125, minimumAmount: 50 },
+  wors: { name: "Wors", pricePerKg: 105, minimumAmount: 30 },
+  "cow-liver": { name: "Isibindi", pricePerKg: 105, minimumAmount: 30 },
+  "cow-fat": { name: "Umhlehlo", pricePerKg: 75, minimumAmount: 15 }
 };
 const CHECKOUT_CART_KEY = "tobz-shisanyama-cart-v1";
 const LAST_ORDER_KEY = "tobz-last-order-v1";
@@ -13,7 +13,7 @@ const checkoutCart = (() => {
   try { return JSON.parse(localStorage.getItem(CHECKOUT_CART_KEY)) || []; }
   catch { return []; }
 })();
-const validItems = checkoutCart.filter(item => CHECKOUT_PRODUCTS[item.id] && Number.isFinite(Number(item.amount)) && Number(item.amount) > 0)
+const validItems = checkoutCart.filter(item => CHECKOUT_PRODUCTS[item.id] && Number.isFinite(Number(item.amount)) && Number(item.amount) >= CHECKOUT_PRODUCTS[item.id].minimumAmount)
   .map(item => ({ id: item.id, amount: Math.round(Number(item.amount) * 100) / 100 }));
 const checkoutTotal = validItems.reduce((sum, item) => sum + item.amount, 0);
 const itemsContainer = document.getElementById("checkout-items");
