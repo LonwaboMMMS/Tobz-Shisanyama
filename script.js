@@ -81,7 +81,7 @@ function renderCart(){
  itemsEl.innerHTML=cart.map(item=>{
   const p=products.find(product=>product.id===item.id);if(!p)return '';
   const kg=weightFor(item.amount,p.pricePerKg);
-  return '<div class="cart-line"><div><h4>'+p.name+'</h4><p>'+money(p.pricePerKg)+' per kg · '+kg.toFixed(2)+' kg</p><p class="cart-line-price">'+money(item.amount)+'</p><button class="remove-item" data-remove="'+p.id+'">Remove</button></div><label><span class="sr-only">Amount in rand</span><span class="amount-input-wrap"><b>R</b><input type="number" min="1" step="1" value="'+item.amount+'" data-cart-amount="'+p.id+'"></span></label></div>';
+  return '<div class="cart-line"><div><h4>'+p.name+'</h4><p>'+money(p.pricePerKg)+' per kg · '+kg.toFixed(2)+' kg</p><p class="cart-line-price">'+money(item.amount)+'</p><button class="remove-item" data-remove="'+p.id+'">Remove</button></div><label><span class="sr-only">Amount in rand</span><span class="amount-input-wrap"><b>R</b><input type="number" min="'+p.minimumAmount+'" step="1" value="'+item.amount+'" data-cart-amount="'+p.id+'"></span></label></div>';
  }).join('');
 }
 function openCart(){const overlay=byId('cart-overlay');if(!overlay)return;overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
