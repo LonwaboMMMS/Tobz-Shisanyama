@@ -3,8 +3,8 @@ const products=[
  {id:'pork',name:'Pork',category:'Pork',pricePerKg:105},
  {id:'beef',name:'Beef',category:'Beef',pricePerKg:125},
  {id:'wors',name:'Wors',category:'Wors',pricePerKg:105},
- {id:'cow-liver',name:'Cow Liver',category:'Beef',pricePerKg:105},
- {id:'cow-fat',name:'Cow Fat',category:'Beef',pricePerKg:75}
+ {id:'cow-liver',name:'Isibindi',category:'Beef',pricePerKg:105},
+ {id:'cow-fat',name:'Umhlehlo',category:'Beef',pricePerKg:75}
 ];
 const CART_KEY='tobz-shisanyama-cart-v1';
 let cart=loadCart();
