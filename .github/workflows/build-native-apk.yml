@@ -48,4 +48,4 @@ jobs:
           gh release create "$TAG" release/tobz-shisanyama.apk \
             --repo "${GITHUB_REPOSITORY}" \
             --title "Tobz Shisanyama Android build ${RUN_NUMBER}" \
-            --notes "Automatically built Android APK from commit ${GITHUB_SHA}." \
+            --notes "Automatically built Android APK from commit ${GITHUB_SHA}."
