@@ -1,7 +1,9 @@
 const PRODUCTS = {
   pork: { name: "Pork", pricePerKg: 105 },
-  beef: { name: "Beef", pricePerKg: 115 },
-  wors: { name: "Wors", pricePerKg: 95 }
+  beef: { name: "Beef", pricePerKg: 125 },
+  wors: { name: "Wors", pricePerKg: 105 },
+  "cow-liver": { name: "Cow Liver", pricePerKg: 105 },
+  "cow-fat": { name: "Cow Fat", pricePerKg: 75 }
 };
 
 export async function onRequestPost({ request, env }) {
@@ -24,7 +26,7 @@ export async function onRequestPost({ request, env }) {
   if (!name || name.length > 100 || !phone || phone.length > 25) {
     return Response.json({ error: "Please provide a valid name and phone number." }, { status: 400 });
   }
-  if (notes.length > 500 || !Array.isArray(body.items) || body.items.length < 1 || body.items.length > 3) {
+  if (notes.length > 500 || !Array.isArray(body.items) || body.items.length < 1 || body.items.length > 5) {
     return Response.json({ error: "The order details are invalid." }, { status: 400 });
   }
 
