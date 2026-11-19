@@ -35,4 +35,12 @@
 <div class="cart-overlay" id="cart-overlay" aria-hidden="true"><aside class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title"><div class="cart-header"><div><p class="eyebrow">YOUR ORDER</p><h2 id="cart-title">YOUR BAG</h2></div><button class="close-cart" id="close-cart">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><div class="cart-total"><span>Subtotal</span><strong id="cart-total">R0.00</strong></div><button class="checkout-button" id="checkout-button" disabled>CHECKOUT</button></div></aside></div>
 <script src="script.js"></script>
 
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+      .catch(error => console.error("Service worker registration failed:", error));
+  });
+}
+</script>
 </body></html>
