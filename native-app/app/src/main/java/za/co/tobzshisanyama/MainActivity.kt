@@ -364,6 +364,7 @@ private fun BagScreen(
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(18.dp)) {
                 items(cart) { line ->
                     val meat = meats.first { it.id == line.id }
+                    var amountText by remember(line.id) { mutableStateOf(line.amount.toString()) }
                     Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).background(Color.White).padding(16.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(meat.name, fontSize = 18.sp, fontWeight = FontWeight.Bold)
@@ -371,8 +372,11 @@ private fun BagScreen(
                         }
                         Text("${"%.2f".format(line.amount / meat.price)} kg · R${meat.price}/kg", color = Muted, fontSize = 12.sp)
                         OutlinedTextField(
-                            value = line.amount.toString(),
-                            onValueChange = { value -> value.toDoubleOrNull()?.let { if (it > 0) onChange(line.id, it) } },
+                            value = amountText,
+                            onValueChange = { value ->
+                                amountText = value
+                                value.toDoubleOrNull()?.let { if (it > 0) onChange(line.id, it) }
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text("Spend amount (R)") },
                             singleLine = true,
