@@ -61,6 +61,27 @@ renderCart();
  const button=document.querySelector('[data-add="'+id+'"]');
  if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
 }
+function addIsibindiCombo(){
+ const additions=[{id:'cow-liver',input:'cow-liver'},{id:'cow-fat',input:'cow-fat'}];
+ const selected=[];
+ for(const entry of additions){
+  const input=document.querySelector('[data-amount="'+entry.input+'"]');
+  const amount=Number(input?.value);
+  const product=products.find(p=>p.id===entry.id);
+  if(!input||input.value.trim()==='')continue;
+  if(!Number.isFinite(amount)||amount<product.minimumAmount){input.setCustomValidity('Minimum order is '+money(product.minimumAmount)+'.');input.reportValidity();input.setCustomValidity('');input.focus();return}
+  selected.push({id:entry.id,amount});
+ }
+ if(!selected.length){const input=document.querySelector('[data-amount="cow-liver"]');input?.focus();return}
+ selected.forEach(addition=>{
+  const existing=cart.find(item=>item.id===addition.id);
+  if(existing)existing.amount=Math.round((existing.amount+addition.amount)*100)/100;
+  else cart.push(addition);
+ });
+ saveCart();renderCart();
+ const button=document.querySelector('[data-add-combo]');
+ if(button){const old=button.innerHTML;button.textContent='ADDED ✓';setTimeout(()=>button.innerHTML=old,900)}
+}
 function renderCart(){
  const count=cart.length;
  const total=cart.reduce((sum,item)=>sum+item.amount,0);
@@ -82,6 +103,7 @@ function closeCart(){const overlay=byId('cart-overlay');if(!overlay)return;overl
 document.querySelectorAll('.year').forEach(el=>el.textContent=new Date().getFullYear());
 document.querySelectorAll('[data-amount]').forEach(input=>{updateWeight(input.dataset.amount);input.addEventListener('input',()=>updateWeight(input.dataset.amount))});
 document.querySelectorAll('[data-add]').forEach(button=>button.addEventListener('click',()=>addProduct(button.dataset.add)));
+document.querySelector('[data-add-combo]')?.addEventListener('click',addIsibindiCombo);
 byId('open-cart')?.addEventListener('click',openCart);byId('mobile-cart')?.addEventListener('click',openCart);byId('close-cart')?.addEventListener('click',closeCart);
 byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('cart-overlay'))closeCart()});
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCart()});
