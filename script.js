@@ -95,7 +95,7 @@ renderCart();
 
   const indicator = document.createElement("div");
   indicator.className = "pull-refresh-indicator";
-  indicator.textContent = "PULL TO REFRESH";
+  indicator.innerHTML = "<span>PULL TO REFRESH</span>";
   indicator.setAttribute("role", "status");
   indicator.setAttribute("aria-live", "polite");
   document.documentElement.appendChild(indicator);
@@ -103,7 +103,7 @@ renderCart();
   document.documentElement.style.overscrollBehaviorY = "contain";
 
   const showIndicator = (text, visible = true) => {
-    indicator.textContent = text;
+    indicator.querySelector("span").textContent = text;
     indicator.classList.toggle("visible", visible);
   };
 
