@@ -1,9 +1,9 @@
 const PRODUCTS = {
-  pork: { name: "Pork", pricePerKg: 105 },
-  beef: { name: "Beef", pricePerKg: 125 },
-  wors: { name: "Wors", pricePerKg: 105 },
-  "cow-liver": { name: "Cow Liver", pricePerKg: 105 },
-  "cow-fat": { name: "Cow Fat", pricePerKg: 75 }
+  pork: { name: "Pork", pricePerKg: 105, minimumAmount: 40 },
+  beef: { name: "Beef", pricePerKg: 125, minimumAmount: 50 },
+  wors: { name: "Wors", pricePerKg: 105, minimumAmount: 30 },
+  "cow-liver": { name: "Isibindi", pricePerKg: 105, minimumAmount: 30 },
+  "cow-fat": { name: "Umhlehlo", pricePerKg: 75, minimumAmount: 15 }
 };
 
 export async function onRequestPost({ request, env }) {
@@ -35,7 +35,7 @@ export async function onRequestPost({ request, env }) {
   for (const submitted of body.items) {
     const product = PRODUCTS[submitted?.id];
     const amount = Number(submitted?.amount);
-    if (!product || seen.has(submitted.id) || !Number.isFinite(amount) || amount <= 0 || amount > 10000) {
+    if (!product || seen.has(submitted.id) || !Number.isFinite(amount) || amount < product.minimumAmount || amount > 10000) {
       return Response.json({ error: "One or more order items are invalid." }, { status: 400 });
     }
     seen.add(submitted.id);
