@@ -93,7 +93,19 @@ renderCart();
   let pulling = false;
   let distance = 0;
 
+  const indicator = document.createElement("div");
+  indicator.className = "pull-refresh-indicator";
+  indicator.textContent = "PULL TO REFRESH";
+  indicator.setAttribute("role", "status");
+  indicator.setAttribute("aria-live", "polite");
+  document.documentElement.appendChild(indicator);
+
   document.documentElement.style.overscrollBehaviorY = "contain";
+
+  const showIndicator = (text, visible = true) => {
+    indicator.textContent = text;
+    indicator.classList.toggle("visible", visible);
+  };
 
   document.addEventListener("touchstart", event => {
     if (window.scrollY > 0 || event.touches.length !== 1) return;
@@ -110,18 +122,21 @@ renderCart();
       document.body.style.transform = "";
       distance = 0;
       pulling = false;
+      showIndicator("", false);
       return;
     }
 
     if (window.scrollY > 0) {
       pulling = false;
       document.body.style.transform = "";
+      showIndicator("", false);
       return;
     }
 
     event.preventDefault();
     distance = Math.min(delta * 0.85, 150);
     document.body.style.transform = `translate3d(0, ${distance}px, 0)`;
+    showIndicator("PULL TO REFRESH");
   }, { passive: false });
 
   const finishPull = () => {
@@ -129,12 +144,14 @@ renderCart();
     pulling = false;
 
     if (distance >= threshold) {
+      showIndicator("REFRESHING");
       document.body.style.transition = "transform 160ms ease-out";
       document.body.style.transform = `translate3d(0, ${threshold}px, 0)`;
       window.setTimeout(() => window.location.reload(), 160);
     } else {
       document.body.style.transition = "transform 180ms ease-out";
       document.body.style.transform = "translate3d(0, 0, 0)";
+      showIndicator("", false);
       window.setTimeout(() => {
         document.body.style.transition = "";
         document.body.style.transform = "";
