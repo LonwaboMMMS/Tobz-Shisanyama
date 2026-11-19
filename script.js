@@ -43,7 +43,7 @@ if (categoryTabs.length && productCards.length) {
   history.replaceState(null, '', '#' + category);
  }));
  const initialCategory = location.hash.slice(1);
- setMenuCategory(['pork', 'beef', 'wors'].includes(initialCategory) ? initialCategory : 'all');
+ setMenuCategory(['pork', 'beef', 'wors', 'isibindi', 'umhlehlo'].includes(initialCategory) ? initialCategory : 'all');
 }
 
 function addProduct(id){
@@ -51,13 +51,6 @@ function addProduct(id){
  const amount=Number(input?.value),product=products.find(p=>p.id===id);
  if(!product||!Number.isFinite(amount)||amount<product.minimumAmount){if(input){input.setCustomValidity('Minimum order is '+money(product?.minimumAmount||1)+'.');input.reportValidity();input.setCustomValidity('');input.focus()}return}
  const additions = [{id,amount}];
- if(id==='cow-liver') {
-  const fatToggle=document.querySelector('[data-fat-toggle]');
-  const fatInput=document.querySelector('[data-amount="cow-fat"]');
-  const fatAmount=Number(fatInput?.value);
-  if(fatToggle?.checked && (!Number.isFinite(fatAmount)||fatAmount<products.find(p=>p.id==='cow-fat').minimumAmount)){if(fatInput){fatInput.setCustomValidity('Minimum order for Umhlehlo is R15.');fatInput.reportValidity();fatInput.setCustomValidity('');fatInput.focus()}return}
-  if(fatToggle?.checked) additions.push({id:'cow-fat',amount:fatAmount});
- }
  additions.forEach(addition=>{
   const existing=cart.find(item=>item.id===addition.id);
   if(existing) existing.amount=Math.round((existing.amount+addition.amount)*100)/100;
@@ -88,11 +81,6 @@ function openCart(){const overlay=byId('cart-overlay');if(!overlay)return;overla
 function closeCart(){const overlay=byId('cart-overlay');if(!overlay)return;overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow=''}
 document.querySelectorAll('.year').forEach(el=>el.textContent=new Date().getFullYear());
 document.querySelectorAll('[data-amount]').forEach(input=>{updateWeight(input.dataset.amount);input.addEventListener('input',()=>updateWeight(input.dataset.amount))});
-const fatToggle=document.querySelector('[data-fat-toggle]');
-fatToggle?.addEventListener('change',()=>{
- const wrap=document.querySelector('[data-fat-amount-wrap]'),row=document.querySelector('[data-fat-weight-row]'),input=document.querySelector('[data-amount="cow-fat"]');
- if(wrap)wrap.hidden=!fatToggle.checked;if(row)row.hidden=!fatToggle.checked;if(input)input.disabled=!fatToggle.checked;
-});
 document.querySelectorAll('[data-add]').forEach(button=>button.addEventListener('click',()=>addProduct(button.dataset.add)));
 byId('open-cart')?.addEventListener('click',openCart);byId('mobile-cart')?.addEventListener('click',openCart);byId('close-cart')?.addEventListener('click',closeCart);
 byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('cart-overlay'))closeCart()});
