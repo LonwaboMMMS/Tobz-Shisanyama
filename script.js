@@ -1,8 +1,10 @@
 // Tobz Shisanyama: price-first ordering. Customers enter rand; weight is calculated from the price per kg.
 const products=[
  {id:'pork',name:'Pork',category:'Pork',pricePerKg:105},
- {id:'beef',name:'Beef',category:'Beef',pricePerKg:115},
- {id:'wors',name:'Wors',category:'Wors',pricePerKg:95}
+ {id:'beef',name:'Beef',category:'Beef',pricePerKg:125},
+ {id:'wors',name:'Wors',category:'Wors',pricePerKg:105},
+ {id:'cow-liver',name:'Cow Liver',category:'Beef',pricePerKg:105},
+ {id:'cow-fat',name:'Cow Fat',category:'Beef',pricePerKg:75}
 ];
 const CART_KEY='tobz-shisanyama-cart-v1';
 let cart=loadCart();
@@ -29,7 +31,8 @@ function setMenuCategory(category) {
   else tab.removeAttribute('aria-current');
  });
  productCards.forEach(card => {
-  card.hidden = category !== 'all' && card.id !== category;
+  const cardCategory = card.dataset.category || card.id;
+  card.hidden = category !== 'all' && cardCategory !== category;
  });
 }
 if (categoryTabs.length && productCards.length) {
@@ -47,9 +50,19 @@ function addProduct(id){
  const input=document.querySelector('[data-amount="'+id+'"]');
  const amount=Number(input?.value),product=products.find(p=>p.id===id);
  if(!product||!Number.isFinite(amount)||amount<=0){input?.focus();return}
- const existing=cart.find(item=>item.id===id);
- if(existing){existing.amount=Math.round((existing.amount+amount)*100)/100}
- else cart.push({id,amount});
+ const additions = [{id,amount}];
+ if(id==='cow-liver') {
+  const fatToggle=document.querySelector('[data-fat-toggle]');
+  const fatInput=document.querySelector('[data-amount="cow-fat"]');
+  const fatAmount=Number(fatInput?.value);
+  if(fatToggle?.checked && (!Number.isFinite(fatAmount)||fatAmount<=0)){fatInput?.focus();return}
+  if(fatToggle?.checked) additions.push({id:'cow-fat',amount:fatAmount});
+ }
+ additions.forEach(addition=>{
+  const existing=cart.find(item=>item.id===addition.id);
+  if(existing) existing.amount=Math.round((existing.amount+addition.amount)*100)/100;
+  else cart.push(addition);
+ });
  saveCart();
 renderCart();
  const button=document.querySelector('[data-add="'+id+'"]');
@@ -75,6 +88,11 @@ function openCart(){const overlay=byId('cart-overlay');if(!overlay)return;overla
 function closeCart(){const overlay=byId('cart-overlay');if(!overlay)return;overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow=''}
 document.querySelectorAll('.year').forEach(el=>el.textContent=new Date().getFullYear());
 document.querySelectorAll('[data-amount]').forEach(input=>{updateWeight(input.dataset.amount);input.addEventListener('input',()=>updateWeight(input.dataset.amount))});
+const fatToggle=document.querySelector('[data-fat-toggle]');
+fatToggle?.addEventListener('change',()=>{
+ const wrap=document.querySelector('[data-fat-amount-wrap]'),row=document.querySelector('[data-fat-weight-row]'),input=document.querySelector('[data-amount="cow-fat"]');
+ if(wrap)wrap.hidden=!fatToggle.checked;if(row)row.hidden=!fatToggle.checked;if(input)input.disabled=!fatToggle.checked;
+});
 document.querySelectorAll('[data-add]').forEach(button=>button.addEventListener('click',()=>addProduct(button.dataset.add)));
 byId('open-cart')?.addEventListener('click',openCart);byId('mobile-cart')?.addEventListener('click',openCart);byId('close-cart')?.addEventListener('click',closeCart);
 byId('cart-overlay')?.addEventListener('click',event=>{if(event.target===byId('cart-overlay'))closeCart()});
