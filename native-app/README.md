@@ -13,7 +13,7 @@ This is a separate Kotlin + Jetpack Compose Android application. It does not loa
 Open the `native-app` folder in Android Studio, allow Gradle sync, then choose **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
 
 ## Automated APK
-GitHub Actions builds a signed debug APK whenever files in `native-app/` change on `main`. It publishes the file as the latest prerelease asset:
+GitHub Actions builds a signed debug APK whenever files in `native-app/` change on `main`. It publishes the file as the latest release asset:
 `https://github.com/LonwaboMMMS/Tobz-Shisanyama/releases/latest/download/tobz-shisanyama.apk`
 
 For a public production release, configure a private release keystore and signing secrets. Do not commit signing keys or passwords to this repository.
