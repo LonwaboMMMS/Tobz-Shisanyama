@@ -150,7 +150,7 @@ private fun TobzApp(
         containerColor = Paper,
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
-                listOf("Home", "Menu", "Bag", "About").forEach { label ->
+                listOf("Home", "Menu", "Bag", "About", "Contact").forEach { label ->
                     NavigationBarItem(
                         selected = screen == label.lowercase(),
                         onClick = { screen = label.lowercase(); status = "" },
@@ -222,6 +222,7 @@ private fun TobzApp(
                     }
                 )
                 "about" -> AboutScreen()
+                "contact" -> ContactScreen()
                 else -> HomeScreen(onMenu = { screen = "menu" }, onBag = { screen = "bag" })
             }
         }
@@ -427,6 +428,27 @@ private fun AboutScreen() {
             Text("GOOD FOOD BRINGS PEOPLE TOGETHER.", fontSize = 24.sp, fontWeight = FontWeight.Black, lineHeight = 28.sp)
             Spacer(Modifier.height(12.dp))
             Text("Tobz Shisanyama is about keeping things simple: great meat, honest prices and the joy of sharing a proper meal. Whether it's pork, beef or wors, you choose what you'd like to spend and we calculate the weight for you.", color = Muted, fontSize = 14.sp, lineHeight = 22.sp)
+        }
+    }
+}
+
+
+@Composable
+private fun ContactScreen() {
+    Column(Modifier.fillMaxSize()) {
+        ScreenTitle("WE ARE HERE TO HELP", "LET'S TALK.", "Questions about the menu or your order? Get in touch with the Tobz team.")
+        Column(Modifier.padding(22.dp)) {
+            listOf(
+                "EMAIL" to "Our email address will be added here.",
+                "PHONE / WHATSAPP" to "Our contact number will be added here.",
+                "LOCATION" to "Our location and collection details will be added here."
+            ).forEach { (heading, detail) ->
+                Column(Modifier.fillMaxWidth().padding(bottom = 12.dp).background(Color.White).padding(18.dp)) {
+                    Text(heading, color = Orange, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                    Spacer(Modifier.height(5.dp))
+                    Text(detail, color = Muted, fontSize = 13.sp)
+                }
+            }
         }
     }
 }
