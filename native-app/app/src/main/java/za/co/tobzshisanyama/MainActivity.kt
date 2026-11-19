@@ -3,6 +3,8 @@ package za.co.tobzshisanyama
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -204,7 +206,7 @@ private fun TobzApp(
                                 .put("address", "")
                                 .put("notes", notes.trim())
                             onPay(customer, cart.toList()) { result ->
-                                (context as? ComponentActivity)?.runOnUiThread {
+                                Handler(Looper.getMainLooper()).post {
                                     sending = false
                                     result.onSuccess { paymentUrl ->
                                         cart.clear()
